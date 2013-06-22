@@ -5,8 +5,6 @@ import (
   "net/http"
   "fmt"
   "bufio"
-  //"bytes"
-  //"io"
 )
 
 type Tweet struct {
@@ -24,7 +22,7 @@ type Credentials struct {
 func TwitterStream (ch chan Tweet, credentials *Credentials, params map[string]string){
   c := oauth.NewCredentials(credentials.oauth_consumer_key, credentials.oauth_token, credentials.oauth_consumer_secret, credentials.oauth_token_secret)
 
-  r, _ := oauth.NewRequest("POST", "https://stream.twitter.com/1.1/statuses/filter.json?track=twitter", params, c)
+  r, _ := oauth.NewRequest("POST", "https://stream.twitter.com/1.1/statuses/filter.json", params, c)
 
   client := http.Client{}
   resp, _ := client.Do(r.HttpRequest())
@@ -33,7 +31,9 @@ func TwitterStream (ch chan Tweet, credentials *Credentials, params map[string]s
 
   body_reader := bufio.NewReader(resp.Body)
   for {
-    line, prefix, _ := body_reader.ReadLine()
+    line, prefix, err := body_reader.ReadLine()
+    if err != nil { break }
+
     fmt.Print(string(line))
     if !prefix {
       fmt.Println("\n----------------------------")

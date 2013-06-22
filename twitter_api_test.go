@@ -13,7 +13,7 @@ var _ = Suite(&OAuthSuite{})
 
 func (s *OAuthSuite) TestCreateClient(c *C) {
   ch := make(chan Tweet)
-  params := make(map[string]string, 2)
+  params := make(map[string]string, 1)
 
   credentials := Credentials{
     oauth_consumer_key: "XjY7q0CYwRxSBzCpUeRDzQ",
@@ -22,7 +22,7 @@ func (s *OAuthSuite) TestCreateClient(c *C) {
     oauth_token_secret: "tO5hW1ye3myBnT78DspVbTKWFgadvKeU1EOiV3o5Tg",
   }
 
-  //params["track"] = "golang"
+  params["track"] = "golang"
 
   go TwitterStream(ch, &credentials, params)
 
