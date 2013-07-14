@@ -3,7 +3,6 @@ package twitter_api
 import (
   . "launchpad.net/gocheck"
   "testing"
-  "fmt"
 )
 
 // Hook up gocheck into the "go test" runner.
@@ -12,6 +11,7 @@ type OAuthSuite struct{}
 var _ = Suite(&OAuthSuite{})
 
 func (s *OAuthSuite) TestCreateClient(c *C) {
+
   ch := make(chan Message)
   params := make(map[string]string, 1)
 
@@ -26,11 +26,8 @@ func (s *OAuthSuite) TestCreateClient(c *C) {
 
   go TwitterStream(ch, &credentials, params)
 
-  for {
-    message := <- ch
-
-    if message.Error != nil { break }
-
-    fmt.Println("Tweet body = ", message.Tweet.Body)
-  }
+  message := <- ch
+  c.Assert(message.Response.StatusCode, Equals, 200)
+  c.Assert(message.Tweet, NotNil)
+  c.Assert(message.Tweet.Body, NotNil)
 }

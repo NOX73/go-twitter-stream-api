@@ -4,11 +4,13 @@ import (
   "github.com/NOX73/go-oauth"
   "net/http"
   "bufio"
+  "errors"
 )
 
 const (
   NewRequestMethod = "POST"
   NewRequestURL = "https://stream.twitter.com/1.1/statuses/filter.json"
+  TwitterStreamApiConnestionError = "Error: Response status code not 200."
 )
 
 type Credentials struct {
@@ -37,6 +39,10 @@ func TwitterStream (ch chan Message, credentials *Credentials, params map[string
 
   client := http.Client{}
   resp, err := client.Do(r.HttpRequest())
+
+  if err == nil{
+    err = CheckError(resp)
+  }
 
   if err != nil {
     message = Message{
@@ -76,4 +82,11 @@ func TwitterStream (ch chan Message, credentials *Credentials, params map[string
 
     ch <- message
   }
+}
+
+func CheckError(r *http.Response) error {
+  if r.StatusCode != 200{
+    return errors.New(TwitterStreamApiConnestionError)
+  }
+  return nil
 }
