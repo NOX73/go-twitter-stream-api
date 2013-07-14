@@ -30,6 +30,11 @@ type Tweet struct {
   Body string
 }
 
+func NewCredentials(oauth_consumer_key, oauth_token, oauth_consumer_secret, oauth_token_secret string) *Credentials {
+  return &Credentials{oauth_consumer_key, oauth_token, oauth_consumer_secret, oauth_token_secret}
+}
+
+
 func TwitterStream (ch chan Message, credentials *Credentials, params map[string]string){
   var message Message
 

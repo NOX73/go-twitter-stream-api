@@ -15,16 +15,11 @@ func (s *OAuthSuite) TestCreateClient(c *C) {
   ch := make(chan Message)
   params := make(map[string]string, 1)
 
-  credentials := Credentials{
-    oauth_consumer_key: "XjY7q0CYwRxSBzCpUeRDzQ",
-    oauth_token: "214373359-jn77FNlrKEajR4Gpp9l5msb1KXCGXZ7QeJPtt5TF",
-    oauth_consumer_secret: "cuseCPmxY4taUEmouOhXIvR7MVSUWdRKjKHvHKgVvOk",
-    oauth_token_secret: "tO5hW1ye3myBnT78DspVbTKWFgadvKeU1EOiV3o5Tg",
-  }
+  credentials := NewCredentials("XjY7q0CYwRxSBzCpUeRDzQ", "214373359-jn77FNlrKEajR4Gpp9l5msb1KXCGXZ7QeJPtt5TF", "cuseCPmxY4taUEmouOhXIvR7MVSUWdRKjKHvHKgVvOk", "tO5hW1ye3myBnT78DspVbTKWFgadvKeU1EOiV3o5Tg")
 
   params["track"] = "twitter"
 
-  go TwitterStream(ch, &credentials, params)
+  go TwitterStream(ch, credentials, params)
 
   message := <- ch
   c.Assert(message.Response.StatusCode, Equals, 200)
