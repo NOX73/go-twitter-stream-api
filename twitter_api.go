@@ -107,6 +107,8 @@ func TwitterStream (ch chan Message, credentials *Credentials, params map[string
     part, prefix, err := body_reader.ReadLine()
     if err != nil { break }
 
+    if len(part) == 0 { continue }
+
     buffer := append([]byte(nil), part...)
 
     for prefix && err == nil {
