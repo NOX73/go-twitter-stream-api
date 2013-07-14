@@ -32,7 +32,13 @@ type Message struct {
 
 type TweetJSON struct {
   Text string
-  User struct {Id int; SreenName string}
+  User struct {
+    Id int
+    Screen_name string
+    Name string
+    Description string
+    Profile_image_url_https string
+  }
 }
 
 type Tweet struct {
@@ -52,10 +58,8 @@ func (t *Tweet) UserID() int {
 
 func (t *Tweet) UserName() string {
   if t.JSON == nil{ t.ParseJSON() }
-  return t.JSON.User.SreenName
+  return t.JSON.User.Screen_name
 }
-
-
 
 func (t *Tweet) ParseJSON() {
   t.JSON = &TweetJSON{}
