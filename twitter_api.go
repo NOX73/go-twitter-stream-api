@@ -79,7 +79,6 @@ func TwitterStream (ch chan Messager, credentials *Credentials, params map[strin
   for {
     var part []byte //Part of line
     var prefix bool //Flag. Readln readed only part of line.
-    var sep []byte // Separator for Join function
 
     parts := make([][]byte, 0, 5)
 
@@ -94,7 +93,7 @@ func TwitterStream (ch chan Messager, credentials *Credentials, params map[strin
     if err != nil { break }
 
     tweet := &TweetMessage{
-      Body: string(bytes.Join(parts, sep)),
+      Body: string(bytes.Join(parts, []byte(nil))),
     }
 
     ch <- tweet
