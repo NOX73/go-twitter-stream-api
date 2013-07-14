@@ -86,7 +86,7 @@ func TwitterStream (ch chan Messager, credentials *Credentials, params map[strin
     part, prefix, err := body_reader.ReadLine()
     parts = append(parts, part)
 
-    for !prefix {
+    for prefix {
       part, prefix, err = body_reader.ReadLine()
       parts = append(parts, part)
     }
