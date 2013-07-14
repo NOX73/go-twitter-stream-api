@@ -4,8 +4,11 @@ import (
   "github.com/NOX73/go-oauth"
   "net/http"
   "bufio"
-  //"fmt"
-  //"bytes"
+)
+
+const (
+  NewRequestMethod = "POST"
+  NewRequestURL = "https://stream.twitter.com/1.1/statuses/filter.json"
 )
 
 type Credentials struct {
@@ -15,68 +18,38 @@ type Credentials struct {
   oauth_token_secret string
 }
 
-const (
-  StatusMessageKind = 0
-  TweetMessageKind = 1
-)
-
-type Messager interface {
-  Kind() int
-  Tweet() *TweetMessage
-  Status() *StatusMessage
+type Message struct {
+  Error error
+  Response *http.Response
+  Tweet *Tweet
 }
 
-type StatusMessage struct {
-  StatusCode int
-  Error bool
-}
-
-func (m *StatusMessage) Kind() int {
-  return StatusMessageKind
-}
-
-func (m *StatusMessage) Status() *StatusMessage {
-  return m
-}
-
-func (m *StatusMessage) Tweet() *TweetMessage {
-  return &TweetMessage{}
-}
-
-
-
-type TweetMessage struct {
+type Tweet struct {
   Body string
 }
 
-func (m *TweetMessage) Kind() int {
-  return TweetMessageKind
-}
+func TwitterStream (ch chan Message, credentials *Credentials, params map[string]string){
+  var message Message
 
-func (m *TweetMessage) Tweet() *TweetMessage {
-  return m
-}
-
-func (m *TweetMessage) Status() *StatusMessage {
-  return &StatusMessage{} 
-}
-
-func TwitterStream (ch chan Messager, credentials *Credentials, params map[string]string){
   c := oauth.NewCredentials(credentials.oauth_consumer_key, credentials.oauth_token, credentials.oauth_consumer_secret, credentials.oauth_token_secret)
 
-  r, _ := oauth.NewRequest("POST", "https://stream.twitter.com/1.1/statuses/filter.json", params, c)
+  r, _ := oauth.NewRequest(NewRequestMethod, NewRequestURL, params, c)
 
   client := http.Client{}
-  resp, _ := client.Do(r.HttpRequest())
+  resp, err := client.Do(r.HttpRequest())
 
-  message := &StatusMessage{
-    StatusCode: resp.StatusCode,
-    Error: false,
+  if err != nil {
+    message = Message{
+      Error:err,
+      Response: resp,
+    }
+
+    ch <- message
+    return
   }
 
-  ch <- message
-
   body_reader := bufio.NewReader(resp.Body)
+
   for {
     var part []byte //Part of line
     var prefix bool //Flag. Readln readed only part of line.
@@ -92,10 +65,15 @@ func TwitterStream (ch chan Messager, credentials *Credentials, params map[strin
     }
     if err != nil { break }
 
-    tweet := &TweetMessage{
+    tweet := &Tweet{
       Body: string(buffer),
     }
 
-    ch <- tweet
+    message = Message{
+      Response: resp,
+      Tweet: tweet,
+    }
+
+    ch <- message
   }
 }

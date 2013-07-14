@@ -12,7 +12,7 @@ type OAuthSuite struct{}
 var _ = Suite(&OAuthSuite{})
 
 func (s *OAuthSuite) TestCreateClient(c *C) {
-  ch := make(chan Messager)
+  ch := make(chan Message)
   params := make(map[string]string, 1)
 
   credentials := Credentials{
@@ -27,13 +27,10 @@ func (s *OAuthSuite) TestCreateClient(c *C) {
   go TwitterStream(ch, &credentials, params)
 
   for {
-    t := <- ch
-    fmt.Println("Recieve message with kind = ", t.Kind())
-    switch t.Kind() {
-    case StatusMessageKind:
-      fmt.Println("Status = ", t.Status().StatusCode)
-    case TweetMessageKind:
-      fmt.Println("Tweet body = ", t.Tweet().Body)
-    }
+    message := <- ch
+
+    if message.Error != nil { break }
+
+    fmt.Println("Tweet body = ", message.Tweet.Body)
   }
 }
