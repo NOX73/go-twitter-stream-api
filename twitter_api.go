@@ -4,7 +4,8 @@ import (
   "github.com/NOX73/go-oauth"
   "net/http"
   "bufio"
-  "bytes"
+  //"fmt"
+  //"bytes"
 )
 
 type Credentials struct {
@@ -80,20 +81,19 @@ func TwitterStream (ch chan Messager, credentials *Credentials, params map[strin
     var part []byte //Part of line
     var prefix bool //Flag. Readln readed only part of line.
 
-    parts := make([][]byte, 0, 5)
-
     part, prefix, err := body_reader.ReadLine()
-    parts = append(parts, part)
+    if err != nil { break }
 
-    for prefix {
+    buffer := append([]byte(nil), part...)
+
+    for prefix && err == nil {
       part, prefix, err = body_reader.ReadLine()
-      parts = append(parts, part)
+      buffer = append(buffer, part...)
     }
-
     if err != nil { break }
 
     tweet := &TweetMessage{
-      Body: string(bytes.Join(parts, []byte(nil))),
+      Body: string(buffer),
     }
 
     ch <- tweet
