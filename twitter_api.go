@@ -5,6 +5,7 @@ import (
   "net/http"
   "bufio"
   "errors"
+  "encoding/json"
 )
 
 const (
@@ -26,9 +27,43 @@ type Message struct {
   Tweet *Tweet
 }
 
+// >> Tweet
+// stream api message
+
+type TweetJSON struct {
+  Text string
+  User struct {Id int; SreenName string}
+}
+
 type Tweet struct {
   Body string
+  JSON *TweetJSON
 }
+
+func (t *Tweet) Text() string {
+  if t.JSON == nil{ t.ParseJSON() }
+  return t.JSON.Text
+}
+
+func (t *Tweet) UserID() int {
+  if t.JSON == nil{ t.ParseJSON() }
+  return t.JSON.User.Id
+}
+
+func (t *Tweet) UserName() string {
+  if t.JSON == nil{ t.ParseJSON() }
+  return t.JSON.User.SreenName
+}
+
+
+
+func (t *Tweet) ParseJSON() {
+  t.JSON = &TweetJSON{}
+  _ = json.Unmarshal([]byte(t.Body), t.JSON) 
+}
+
+// << Tweet
+
 
 func NewCredentials(consumer_key, token, consumer_secret, token_secret string) *Credentials {
   return &Credentials{consumer_key, token, consumer_secret, token_secret}

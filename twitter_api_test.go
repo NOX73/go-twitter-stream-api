@@ -25,4 +25,8 @@ func (s *OAuthSuite) TestCreateClient(c *C) {
   c.Assert(message.Response.StatusCode, Equals, 200)
   c.Assert(message.Tweet, NotNil)
   c.Assert(message.Tweet.Body, NotNil)
+  c.Assert(message.Tweet.Body, NotNil)
+  c.Assert(message.Tweet.Text(), NotNil)
+  c.Assert(message.Tweet.UserID(), NotNil)
+  c.Assert(message.Tweet.UserName(), NotNil)
 }
