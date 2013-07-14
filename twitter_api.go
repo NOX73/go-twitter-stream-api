@@ -14,10 +14,10 @@ const (
 )
 
 type Credentials struct {
-  oauth_consumer_key string
-  oauth_token string
-  oauth_consumer_secret string
-  oauth_token_secret string
+  OauthConsumerKey string
+  OauthToken string
+  OauthConsumerSecret string
+  OauthTokenSecret string
 }
 
 type Message struct {
@@ -30,15 +30,15 @@ type Tweet struct {
   Body string
 }
 
-func NewCredentials(oauth_consumer_key, oauth_token, oauth_consumer_secret, oauth_token_secret string) *Credentials {
-  return &Credentials{oauth_consumer_key, oauth_token, oauth_consumer_secret, oauth_token_secret}
+func NewCredentials(consumer_key, token, consumer_secret, token_secret string) *Credentials {
+  return &Credentials{consumer_key, token, consumer_secret, token_secret}
 }
 
 
 func TwitterStream (ch chan Message, credentials *Credentials, params map[string]string){
   var message Message
 
-  c := oauth.NewCredentials(credentials.oauth_consumer_key, credentials.oauth_token, credentials.oauth_consumer_secret, credentials.oauth_token_secret)
+  c := oauth.NewCredentials(credentials.OauthConsumerKey, credentials.OauthToken, credentials.OauthConsumerSecret, credentials.OauthTokenSecret)
 
   r, _ := oauth.NewRequest(NewRequestMethod, NewRequestURL, params, c)
 
